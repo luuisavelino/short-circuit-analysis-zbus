@@ -1,4 +1,4 @@
-FROM golang:latest AS builder
+FROM golang:latest AS build-stage
 
 WORKDIR /go/src/github.com/luuisavelino/short-circuit-analysis-zbus/
 
@@ -17,7 +17,7 @@ FROM alpine:latest
 
 WORKDIR /root/
 
-COPY --from=0 /go/src/github.com/luuisavelino/short-circuit-analysis-zbus/main ./
+COPY --from=build-stage /go/src/github.com/luuisavelino/short-circuit-analysis-zbus/main ./
 
 EXPOSE 8080
 

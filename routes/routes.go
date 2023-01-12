@@ -1,18 +1,31 @@
 package routes
 
 import (
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/luuisavelino/short-circuit-analysis-zbus/controllers"
+	"github.com/luuisavelino/short-circuit-analysis-zbus/middleware"
 )
 
 func HandleRequest() {
-	r := mux.NewRouter()
-	r.HandleFunc("/health/liveness", controllers.Liveness).Methods("Get")
-	r.HandleFunc("/health/readiness", controllers.Readness).Methods("Get")
-	r.HandleFunc("/api/files/{file}/zbus", controllers.AllZbus).Methods("Get")
-	r.HandleFunc("/api/files/{file}/zbus/{seq}", controllers.ZbusSeq).Methods("Get")
-	log.Fatal(http.ListenAndServe(":8081", r))
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+
+	router.Use(
+		gin.LoggerWithWriter(gin.DefaultWriter, "/actuator/health"),
+		gin.Recovery(),
+		middleware.Logger(),
+	)
+
+	actuator := router.Group("/actuator")
+	{
+		actuator.GET("/health", controllers.HealthGET)
+	}
+
+	zbus := router.Group("/api/v2/files/:fileId")
+	{
+		zbus.GET("/zbus", controllers.AllZbus)
+		zbus.GET("/zbus/:seq", controllers.ZbusSeq)
+	}
+
+	router.Run(":8081")
 }

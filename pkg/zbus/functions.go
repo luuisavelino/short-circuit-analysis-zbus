@@ -1,7 +1,6 @@
 package zbus
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/luuisavelino/short-circuit-analysis-zbus/models"
@@ -18,7 +17,6 @@ func (m Matrix) ArrayCmplxToArrayStr() models.MatrixStr {
 		matrixStr = append(matrixStr, matrixStr[x])
 	}
 
-	fmt.Println(matrixStr)
 	return matrixStr
 }
 
