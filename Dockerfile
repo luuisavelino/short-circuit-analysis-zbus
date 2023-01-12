@@ -1,6 +1,6 @@
 FROM golang:latest AS build-stage
 
-WORKDIR /go/src/github.com/luuisavelino/short-circuit-analysis-zbus/
+WORKDIR /short-circuit-analysis-zbus/
 
 COPY . .
 
@@ -12,12 +12,11 @@ COPY ./main.go .
 
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o main .
 
-
 FROM alpine:latest
 
-WORKDIR /root/
+WORKDIR /short-circuit-analysis-elements/
 
-COPY --from=build-stage /go/src/github.com/luuisavelino/short-circuit-analysis-zbus/main ./
+COPY --from=build-stage /short-circuit-analysis-zbus/main ./
 
 EXPOSE 8080
 
