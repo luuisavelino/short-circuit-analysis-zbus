@@ -18,7 +18,7 @@ var port string = os.Getenv("elements_port")
 func AllZbus(c *gin.Context) {
 	fileId := c.Params.ByName("fileId")
 
-	responseData, err := GetAPI("api/v2/files/" + fileId + "/types/0/elements")
+	responseData, err := GetAPI("/api/v2/files/" + fileId + "/types/0/elements")
 	json.Unmarshal(responseData, &models.Elements)
 
 	if err != nil {
@@ -28,7 +28,7 @@ func AllZbus(c *gin.Context) {
 		return
 	}
 
-	responseData, err = GetAPI("api/v2/files/" + fileId + "/size")
+	responseData, err = GetAPI("/api/v2/files/" + fileId + "/size")
 	json.Unmarshal(responseData, &models.SystemSize)
 
 	if err != nil {
