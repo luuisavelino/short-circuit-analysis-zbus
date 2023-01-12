@@ -1,4 +1,4 @@
-FROM golang:latest AS build-stage
+FROM golang:1.18-bullseye AS build-stage
 
 WORKDIR /short-circuit-analysis-zbus/
 
@@ -12,7 +12,7 @@ COPY ./main.go .
 
 RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o main .
 
-FROM alpine:latest
+FROM alpine:3.17.0
 
 WORKDIR /short-circuit-analysis-elements/
 
