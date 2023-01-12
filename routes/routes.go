@@ -7,7 +7,6 @@ import (
 )
 
 func HandleRequest() {
-	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 
 	router.Use(
