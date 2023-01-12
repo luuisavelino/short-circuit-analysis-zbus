@@ -81,7 +81,7 @@ func ZbusSeq(c *gin.Context) {
 
 func GetAPI(endpoint string) ([]byte, error) {
 	//response, err := http.Get(host + ":" + port + "/api/v2/files/" + fileId + "/types/0/elements")
-	response, err := http.Get(host + port + endpoint)
+	response, err := http.Get(host + ":" + port + endpoint)
 
 	if err != nil {
 		fmt.Println(err)
