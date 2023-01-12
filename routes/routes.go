@@ -27,5 +27,5 @@ func HandleRequest() {
 		zbus.GET("/zbus/:seq", controllers.ZbusSeq)
 	}
 
-	router.Run(":8081")
+	router.Run(":8080")
 }
