@@ -1,7 +1,6 @@
 package models
 
 type Element struct {
-	Id         int    `json:"id"`
 	De         string `json:"de"`
 	Para       string `json:"para"`
 	Nome       string `json:"nome"`

@@ -15,16 +15,18 @@ func HandleRequest() {
 		middleware.Logger(),
 	)
 
-	actuator := router.Group("/actuator")
+	actuator := router.Group("/actuator/health")
 	{
-		actuator.GET("/health", controllers.HealthGET)
+		actuator.GET("/", controllers.HealthGET)
 	}
 
-	zbus := router.Group("/api/v2/files/:fileId")
+	zbus := router.Group("/api/v2/files/:fileId/zbus")
 	{
-		zbus.GET("/zbus", controllers.AllZbus)
-		zbus.GET("/zbus/:seq", controllers.ZbusSeq)
+		zbus.GET("/", controllers.AllZbus)
+		zbus.GET("/:seq", controllers.ZbusSeq)
+		zbus.GET("/atuacao/:line", controllers.Atuacao)
+		zbus.GET("/short-circuit/:line/point/:point", controllers.ShortCircuit)
 	}
 
-	router.Run(":8080")
+	router.Run(":8081")
 }

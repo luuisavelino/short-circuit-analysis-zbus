@@ -10,7 +10,7 @@ type Posicao_zbus struct {
 
 type Matrix [][]complex128
 
-func MontaZbus() (models.ZbusStr, map[string]Posicao_zbus) {
+func MontaZbus() (map[string]Posicao_zbus, error) {
 	var zbus_positiva, _ = Preenche_matriz_com_zeros(models.SystemSize["size"])
 	var zbus_zero, _ = Preenche_matriz_com_zeros(models.SystemSize["size"])
 
@@ -79,11 +79,11 @@ func MontaZbus() (models.ZbusStr, map[string]Posicao_zbus) {
 			models.SystemSize["size"])
 	}
 
-	zbus := models.ZbusStr{
+	models.Zbus = models.ZbusStr{
 		Positiva: zbus_positiva.ArrayCmplxToArrayStr(),
 		Negativa: zbus_positiva.ArrayCmplxToArrayStr(),
 		Zero:     zbus_zero.ArrayCmplxToArrayStr(),
 	}
 
-	return zbus, barras_adicionadas
+	return barras_adicionadas, nil
 }
