@@ -8,7 +8,6 @@ import (
 
 
 func main() {
-
 	fmt.Println("Iniciando o servidor Rest com GO")
 	routes.HandleRequest()
 }

@@ -4,23 +4,19 @@ import (
 	"strconv"
 )
 
-func (zbus Matrix) AdicionaElementoTipo1NaZbus(posicao int, impedancia_str string) Matrix {
+func (zbus *Matrix) AdicionaElementoTipo1NaZbus(posicao int, impedancia_str string) {
 	impedancia, _ := strconv.ParseComplex(impedancia_str, 128)
-	zbus[posicao][posicao] = impedancia
-
-	return zbus
+	(*zbus)[posicao][posicao] = impedancia
 }
 
-func (zbus Matrix) AdicionaElementoTipo2NaZbus(posicao_barra_conectada int, posicao int, impedancia_str string) Matrix {
+func (zbus *Matrix) AdicionaElementoTipo2NaZbus(posicao_barra_conectada int, posicao int, impedancia_str string) {
 	impedancia, _ := strconv.ParseComplex(impedancia_str, 128)
 	for x := 0; x < posicao; x++ {
-		zbus[x][posicao] = zbus[x][posicao_barra_conectada]
-		zbus[posicao][x] = zbus[posicao_barra_conectada][x]
+		(*zbus)[x][posicao] = (*zbus)[x][posicao_barra_conectada]
+		(*zbus)[posicao][x] = (*zbus)[posicao_barra_conectada][x]
 	}
 
-	zbus[posicao][posicao] = impedancia + zbus[posicao_barra_conectada][posicao_barra_conectada]
-
-	return zbus
+	(*zbus)[posicao][posicao] = impedancia + (*zbus)[posicao_barra_conectada][posicao_barra_conectada]
 }
 
 func (zbus Matrix) AdicionaElementoTipo3ComReducaoDeKron(posicao_barra_de int, posicao_barra_para int, impedancia_str string, tamanho_do_sistema int) Matrix {
