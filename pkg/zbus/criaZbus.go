@@ -1,13 +1,12 @@
 package zbus
 
 import (
-	"fmt"
-
 	"github.com/luuisavelino/short-circuit-analysis-zbus/models"
 )
 
 type Posicao_zbus struct {
 	Posicao int
+	Tipo string
 }
 
 type Matrix [][]complex128
@@ -24,13 +23,9 @@ func MontaZbus() (map[string]Posicao_zbus, error) {
 	zbus_zero, _ = Preenche_matriz_com_zeros(models.SystemSize["size"])
 	barras_adicionadas = make(map[string]Posicao_zbus)
 
-	fmt.Println("tipo1")
 	AdicionaElementosTipo1()
-	fmt.Println("tipo2")
 	AdicionaElementosTipo2()
-	fmt.Println("tipo3")
 	AdicionaElementosTipo3()
-	//fmt.Println("fim")
 
 	models.Zbus = models.ZbusStr{
 		Positiva: zbus_positiva.ArrayCmplxToArrayStr(),
@@ -48,6 +43,7 @@ func AdicionaElementosTipo1() {
 
 		barras_adicionadas[dados_linha.De] = Posicao_zbus{
 			Posicao: posicao,
+			Tipo: "1",
 		}
 
 		posicao++
@@ -70,6 +66,7 @@ func AdicionaElementosTipo2() {
 
 				barras_adicionadas[linha.Para] = Posicao_zbus{
 					Posicao: posicao,
+					Tipo: "2",
 				}
 
 				delete(models.Elements["2"], nome_linha)
@@ -81,6 +78,7 @@ func AdicionaElementosTipo2() {
 
 				barras_adicionadas[linha.De] = Posicao_zbus{
 					Posicao: posicao,
+					Tipo: "2",
 				}
 
 				delete(models.Elements["2"], nome_linha)

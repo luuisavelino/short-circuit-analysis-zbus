@@ -24,8 +24,12 @@ func HandleRequest() {
 	{
 		zbus.GET("/", controllers.AllZbus)
 		zbus.GET("/:seq", controllers.ZbusSeq)
-		zbus.GET("/atuacao/:line", controllers.Atuacao)
-		zbus.GET("/short-circuit/:line/point/:point", controllers.ShortCircuit)
+		zbus.GET("/atuacao/:line", controllers.AllZbus)
+		zbus.GET("/atuacao/:line/bars", controllers.Bars)
+		zbus.GET("/atuacao/:line/bars/:bar", controllers.Bar)
+		zbus.GET("/short-circuit/:line/point/:point", controllers.AllZbus)
+		zbus.GET("/short-circuit/:line/point/:point/bars", controllers.Bars)
+		zbus.GET("/short-circuit/:line/point/:point/bars/:bar", controllers.Bar)
 	}
 
 	router.Run(":8081")

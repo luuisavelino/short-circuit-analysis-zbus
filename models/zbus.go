@@ -22,5 +22,10 @@ type ZbusStr struct {
 var Zbus ZbusStr
 
 
+type Posicao_zbus struct {
+	Posicao int
+}
+
+var BarrasAdicionadas = make(map[string]Posicao_zbus)
 
 

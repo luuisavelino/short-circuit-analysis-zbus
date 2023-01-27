@@ -71,7 +71,7 @@ func GetAPI(endpoint string) ([]byte, error) {
 	return responseData, nil
 }
 
-func GetElements(c *gin.Context) error {
+func GetData(c *gin.Context) error {
 	fileId := c.Params.ByName("fileId")
 
 	responseData, err := GetAPI("/api/v2/files/" + fileId + "/types/0/elements")
@@ -91,13 +91,40 @@ func GetElements(c *gin.Context) error {
 	return nil
 }
 
-func GetZbus() error {
-	_, err := zbus.MontaZbus()
-	return err
-}
-
 func jsonError(c *gin.Context, err error) {
 	c.JSON(http.StatusBadRequest, gin.H{
 		"Error": err.Error(),
 	})
+}
+
+func GetElements(c *gin.Context) error {
+	line := c.Params.ByName("line")
+
+	err := GetData(c)
+	if err != nil {
+		return err
+	}
+
+	if c.Params.ByName("point") != "" {
+		point, _ := strconv.Atoi(c.Params.ByName("point"))
+		if err != nil {
+			return err
+		}
+
+		err = adicionaBarraFicticia(line, point)
+		if err != nil {
+			return err
+		}
+	}
+
+	if line != "" {
+		deleteLine(line)
+	}
+
+	return nil
+}
+
+func GetZbus() (map[string]zbus.Posicao_zbus, error) {
+	barrasAdicionadas, err := zbus.MontaZbus()
+	return barrasAdicionadas, err
 }
