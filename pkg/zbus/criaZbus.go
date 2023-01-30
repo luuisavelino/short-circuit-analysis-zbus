@@ -6,59 +6,57 @@ import (
 
 type Posicao_zbus struct {
 	Posicao int
-	Tipo string
+	Tipo    string
 }
 
 type Matrix [][]complex128
 
-var posicao int
-var zbus_positiva, zbus_zero Matrix
-var barras_adicionadas map[string]Posicao_zbus
-var elementosTipo3 []models.Element
+func MontaZbus(ElementsSequencia map[string]models.Elements, SystemSize map[string]int) (models.ZbusStr, map[string]Posicao_zbus, error) {
+	zbus_positiva, zbus_zero, barras_adicionadas, posicao := AdicionaElementosTipo1(ElementsSequencia["1"], SystemSize["size"])
+	zbus_positiva, zbus_zero, barras_adicionadas, elementosTipo3 := AdicionaElementosTipo2(ElementsSequencia["2"], zbus_positiva, zbus_zero, barras_adicionadas, posicao)
+	zbus_positiva, zbus_zero, barras_adicionadas = AdicionaElementosTipo3(elementosTipo3, zbus_positiva, zbus_zero, barras_adicionadas, SystemSize["size"])
 
-func MontaZbus() (map[string]Posicao_zbus, error) {
-
-	posicao = 0
-	zbus_positiva, _ = Preenche_matriz_com_zeros(models.SystemSize["size"])
-	zbus_zero, _ = Preenche_matriz_com_zeros(models.SystemSize["size"])
-	barras_adicionadas = make(map[string]Posicao_zbus)
-
-	AdicionaElementosTipo1()
-	AdicionaElementosTipo2()
-	AdicionaElementosTipo3()
-
-	models.Zbus = models.ZbusStr{
+	zbus := models.ZbusStr{
 		Positiva: zbus_positiva.ArrayCmplxToArrayStr(),
 		Negativa: zbus_positiva.ArrayCmplxToArrayStr(),
 		Zero:     zbus_zero.ArrayCmplxToArrayStr(),
 	}
 
-	return barras_adicionadas, nil
+	return zbus, barras_adicionadas, nil
 }
 
-func AdicionaElementosTipo1() {
-	for _, dados_linha := range models.Elements["1"] {
+func AdicionaElementosTipo1(Elements models.Elements, SystemSize int) (Matrix, Matrix, map[string]Posicao_zbus, int) {
+	var posicao int = 0
+	var barras_adicionadas = make(map[string]Posicao_zbus)
+	zbus_positiva, _ := Preenche_matriz_com_zeros(SystemSize)
+	zbus_zero, _ := Preenche_matriz_com_zeros(SystemSize)
+
+	for _, dados_linha := range Elements {
 		zbus_positiva.AdicionaElementoTipo1NaZbus(posicao, dados_linha.Z_positiva)
 		zbus_zero.AdicionaElementoTipo1NaZbus(posicao, dados_linha.Z_zero)
 
 		barras_adicionadas[dados_linha.De] = Posicao_zbus{
 			Posicao: posicao,
-			Tipo: "1",
+			Tipo:    "1",
 		}
 
 		posicao++
 	}
+
+	return zbus_positiva, zbus_zero, barras_adicionadas, posicao
 }
 
-func AdicionaElementosTipo2() {
-	for len(models.Elements["2"]) != 0 {
-		for nome_linha, linha := range models.Elements["2"] {
+func AdicionaElementosTipo2(Elements models.Elements, zbus_positiva, zbus_zero Matrix, barras_adicionadas map[string]Posicao_zbus, posicao int) (Matrix, Matrix, map[string]Posicao_zbus, []models.Element) {
+	var elementosTipo3 []models.Element
+
+	for len(Elements) != 0 {
+		for nome_linha, linha := range Elements {
 			_, existe_de := barras_adicionadas[linha.De]
 			_, existe_para := barras_adicionadas[linha.Para]
 
 			if existe_de && existe_para {
 				elementosTipo3 = append(elementosTipo3, linha)
-				delete(models.Elements["2"], nome_linha)
+				delete(Elements, nome_linha)
 
 			} else if existe_de {
 				zbus_positiva.AdicionaElementoTipo2NaZbus(barras_adicionadas[linha.De].Posicao, posicao, linha.Z_positiva)
@@ -66,10 +64,10 @@ func AdicionaElementosTipo2() {
 
 				barras_adicionadas[linha.Para] = Posicao_zbus{
 					Posicao: posicao,
-					Tipo: "2",
+					Tipo:    "2",
 				}
 
-				delete(models.Elements["2"], nome_linha)
+				delete(Elements, nome_linha)
 				posicao++
 
 			} else if existe_para {
@@ -78,17 +76,19 @@ func AdicionaElementosTipo2() {
 
 				barras_adicionadas[linha.De] = Posicao_zbus{
 					Posicao: posicao,
-					Tipo: "2",
+					Tipo:    "2",
 				}
 
-				delete(models.Elements["2"], nome_linha)
+				delete(Elements, nome_linha)
 				posicao++
 			}
 		}
 	}
+
+	return zbus_positiva, zbus_zero, barras_adicionadas, elementosTipo3
 }
 
-func AdicionaElementosTipo3() {
+func AdicionaElementosTipo3(elementosTipo3 []models.Element, zbus_positiva, zbus_zero Matrix, barras_adicionadas map[string]Posicao_zbus, SystemSize int) (Matrix, Matrix, map[string]Posicao_zbus) {
 	for x := 0; x < len(elementosTipo3); x++ {
 		linha := elementosTipo3[x]
 
@@ -96,11 +96,13 @@ func AdicionaElementosTipo3() {
 			barras_adicionadas[linha.De].Posicao,
 			barras_adicionadas[linha.Para].Posicao,
 			linha.Z_positiva,
-			models.SystemSize["size"])
+			SystemSize)
 		zbus_zero = zbus_zero.AdicionaElementoTipo3ComReducaoDeKron(
 			barras_adicionadas[linha.De].Posicao,
 			barras_adicionadas[linha.Para].Posicao,
 			linha.Z_zero,
-			models.SystemSize["size"])
+			SystemSize)
 	}
+
+	return zbus_positiva, zbus_zero, barras_adicionadas
 }

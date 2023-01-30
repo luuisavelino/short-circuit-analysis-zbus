@@ -8,8 +8,7 @@ type Element struct {
 	Z_zero     string `json:"z_zero"`
 }
 
-var Elements = make(map[string]map[string]Element)
-var SystemSize = make(map[string]int)
+type Elements map[string]Element
 
 type MatrixStr [][]string
 
@@ -19,13 +18,9 @@ type ZbusStr struct {
 	Zero     MatrixStr `json:"zero"`
 }
 
-var Zbus ZbusStr
-
-
 type Posicao_zbus struct {
 	Posicao int
 }
 
-var BarrasAdicionadas = make(map[string]Posicao_zbus)
-
-
+var ReadOps uint64
+var WriteOps uint64

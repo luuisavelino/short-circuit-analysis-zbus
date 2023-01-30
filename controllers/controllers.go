@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/luuisavelino/short-circuit-analysis-zbus/models"
 )
 
 //var host string = os.Getenv("elements_host")
@@ -16,27 +15,29 @@ var port string = "8080"
 
 func AllZbus(c *gin.Context) {
 
-	err := GetElements(c)
-	if err != nil {
-		jsonError(c, err)
-		return
-	}
-	_, err = GetZbus()
+	ElementsSequencia, SystemSize, err := GetElements(c)
 	if err != nil {
 		jsonError(c, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, models.Zbus)
+	zbus, _, err := GetZbus(ElementsSequencia, SystemSize)
+	if err != nil {
+		jsonError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, zbus)
 }
 
 func ZbusSeq(c *gin.Context) {
-	err := GetElements(c)
+	ElementsSequencia, SystemSize, err := GetElements(c)
 	if err != nil {
 		jsonError(c, err)
 		return
 	}
-	_, err = GetZbus()
+
+	zbus, _, err := GetZbus(ElementsSequencia, SystemSize)
 	if err != nil {
 		jsonError(c, err)
 		return
@@ -44,24 +45,24 @@ func ZbusSeq(c *gin.Context) {
 
 	switch seq := c.Params.ByName("seq"); seq {
 	case "positiva":
-		c.JSON(http.StatusOK, models.Zbus.Positiva)
+		c.JSON(http.StatusOK, zbus.Positiva)
 	case "negativa":
-		c.JSON(http.StatusOK, models.Zbus.Negativa)
+		c.JSON(http.StatusOK, zbus.Negativa)
 	case "zero":
-		c.JSON(http.StatusOK, models.Zbus.Zero)
+		c.JSON(http.StatusOK, zbus.Zero)
 	default:
 		jsonError(c, errors.New("sequencia nao encontrada"))
 	}
 }
 
 func Bars(c *gin.Context) {
-	err := GetElements(c)
+	ElementsSequencia, SystemSize, err := GetElements(c)
 	if err != nil {
 		jsonError(c, err)
 		return
 	}
 
-	barrasAdicionadas, err := GetZbus()
+	_, barrasAdicionadas, err := GetZbus(ElementsSequencia, SystemSize)
 	if err != nil {
 		jsonError(c, err)
 		return
@@ -70,23 +71,22 @@ func Bars(c *gin.Context) {
 	c.JSON(http.StatusOK, barrasAdicionadas)
 }
 
-
 func Bar(c *gin.Context) {
 	bar := c.Params.ByName("bar")
 
-	err := GetElements(c)
+	ElementsSequencia, SystemSize, err := GetElements(c)
 	if err != nil {
 		jsonError(c, err)
 		return
 	}
 
-	barrasAdicionadas, err := GetZbus()
+	_, barrasAdicionadas, err := GetZbus(ElementsSequencia, SystemSize)
 	if err != nil {
 		jsonError(c, err)
 		return
 	}
 
-	for barra, _ := range barrasAdicionadas {
+	for barra := range barrasAdicionadas {
 		if barra == bar {
 			c.JSON(http.StatusOK, barrasAdicionadas[barra])
 			return

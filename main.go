@@ -6,7 +6,6 @@ import (
 	"github.com/luuisavelino/short-circuit-analysis-zbus/routes"
 )
 
-
 func main() {
 	fmt.Println("Iniciando o servidor Rest com GO")
 	routes.HandleRequest()
